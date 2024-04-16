@@ -32,7 +32,7 @@ const TodoList = () => {
             <h2 className="text-blue-500 text-xl font-bold">Hello, React!</h2>
             <p className="text-lg font-medium">Hello, Typescript!</p>
         </div>
-      <h1>Todo List</h1>
+      <h1 className="text-orange-500 text-xl font-bold">Todo List</h1>
       <input
         type="text"
         className={styles.itemInput}
