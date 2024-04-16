@@ -8,7 +8,14 @@ const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
   const [category, setCategory] = useState("기타"); // 카테고리 상태 추가
-
+  const toggleTodo = (id) => {
+    setTodos(todos.map(todo => {
+      return todo.id === id ? { ...todo, completed: !todo.completed } : todo;
+    }));
+  };
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
   const addTodo = () => {
     if (input.trim() === "") return;
     setTodos([...todos, { id: Date.now(), text: input, completed: false, category: category }]); // 카테고리 속성 추가
@@ -19,7 +26,12 @@ const TodoList = () => {
   // 생략...
 
   return (
+    
     <div className={styles.container}>
+       <div>
+            <h2 className="text-blue-500 text-xl font-bold">Hello, React!</h2>
+            <p className="text-lg font-medium">Hello, Typescript!</p>
+        </div>
       <h1>Todo List</h1>
       <input
         type="text"
