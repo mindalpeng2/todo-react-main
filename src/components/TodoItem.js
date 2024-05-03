@@ -10,16 +10,16 @@ import styles from "@/styles/TodoList.module.css";
 // TodoItem 컴포넌트를 정의합니다.
 const TodoItem = ({ todo, onToggle, onDelete }) => {
 
+  // 등록 날짜를 YYYY-MM-DD 형태로 변환하는 함수
   const formatDate = (date) => {
-    if (!date) return ""; // date가 null 또는 undefined인 경우 빈 문자열 반환
-
-    const formattedDate = new Date(date.toDate()).toLocaleDateString("en-US", {
+    const formattedDate = new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
     });
     return formattedDate;
   };
+
 
   // 각 할 일 항목을 렌더링합니다.
   return (
@@ -36,8 +36,8 @@ const TodoItem = ({ todo, onToggle, onDelete }) => {
         {todo.text}
       </span>
 
-     {/* 등록 날짜를 표시합니다. */}
-     <span className={styles.registrationDate}>
+       {/* 등록 날짜를 표시합니다. */}
+       <span className={styles.registrationDate}>
         {formatDate(todo.createdAt)}
       </span>
 
