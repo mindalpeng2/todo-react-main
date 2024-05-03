@@ -9,6 +9,18 @@ import styles from "@/styles/TodoList.module.css";
 
 // TodoItem 컴포넌트를 정의합니다.
 const TodoItem = ({ todo, onToggle, onDelete }) => {
+
+  const formatDate = (date) => {
+    if (!date) return ""; // date가 null 또는 undefined인 경우 빈 문자열 반환
+
+    const formattedDate = new Date(date.toDate()).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    return formattedDate;
+  };
+
   // 각 할 일 항목을 렌더링합니다.
   return (
     <li className={styles.todoItem}>
@@ -22,6 +34,11 @@ const TodoItem = ({ todo, onToggle, onDelete }) => {
         style={{ textDecoration: todo.completed ? "line-through" : "none" }}
       >
         {todo.text}
+      </span>
+
+     {/* 등록 날짜를 표시합니다. */}
+     <span className={styles.registrationDate}>
+        {formatDate(todo.createdAt)}
       </span>
 
       {/* 삭제 버튼을 렌더링하고, 클릭 시 onDelete 함수를 호출하여 해당 할 일을 삭제합니다. */}
