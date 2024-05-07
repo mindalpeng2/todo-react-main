@@ -6,6 +6,8 @@
 "use client";
 import { serverTimestamp } from "firebase/firestore";
 
+import {useRouter} from "next/navigation";
+import {useSession} from "next-auth/react"
 
 import React, { useState, useEffect } from "react";
 import TodoItem from "@/components/TodoItem";
@@ -34,16 +36,28 @@ const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
 
+  const router = useRouter();
+  const {data} = useSession({
+    required:true,
+    onUnauthenticated(){
+      router.replace("/login")
+    }
+  })
+
+
   useEffect(() => {
     getTodos();
   }, []);
 
   const getTodos = async () => {
     // Firestore 쿼리를 만듭니다.
-    const q = query(todoCollection, orderBy("createdAt", "desc"));
+   // const q = query(todoCollection, orderBy("createdAt", "desc"));
  // const q = query(collection(db, "todos"), where("user", "==", user.uid));
     // const q = query(todoCollection, orderBy("datetime", "asc"));
-
+    
+    if(!data?.user?.name) return;
+    
+    const q = query(todoCollection, where("userName", "==", data?.user?.name));
     // Firestore 에서 할 일 목록을 조회합니다.
     const results = await getDocs(q);
     const newTodos = [];
@@ -75,6 +89,7 @@ const TodoList = () => {
     const currentDate = new Date();
 
     const docRef = await addDoc(todoCollection, {
+      userName: data?.user?.name,
       text: input,
       completed: false,
       createdAt: serverTimestamp(), // Firestore 서버 타임스탬프 사용
