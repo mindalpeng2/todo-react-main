@@ -4,12 +4,12 @@
   할 일 목록의 추가, 삭제, 완료 상태 변경 등의 기능을 구현하였습니다.
 */
 "use client";
-import { serverTimestamp } from "firebase/firestore";
-
-import {useRouter} from "next/navigation";
-import {useSession} from "next-auth/react"
 
 import React, { useState, useEffect } from "react";
+
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+
 import TodoItem from "@/components/TodoItem";
 import styles from "@/styles/TodoList.module.css";
 
@@ -25,6 +25,7 @@ import {
   deleteDoc,
   orderBy,
   where,
+  serverTimestamp,
 } from "firebase/firestore";
 
 // DB의 todos 컬렉션 참조를 만듭니다. 컬렉션 사용시 잘못된 컬렉션 이름 사용을 방지합니다.
@@ -37,27 +38,28 @@ const TodoList = () => {
   const [input, setInput] = useState("");
 
   const router = useRouter();
-  const {data} = useSession({
-    required:true,
-    onUnauthenticated(){
-      router.replace("/login")
-    }
-  })
-
+  const { data } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.replace("/login");
+    },
+  });
 
   useEffect(() => {
+    console.log("data", data);
     getTodos();
-  }, []);
+  }, [data]);
 
   const getTodos = async () => {
     // Firestore 쿼리를 만듭니다.
-   // const q = query(todoCollection, orderBy("createdAt", "desc"));
- // const q = query(collection(db, "todos"), where("user", "==", user.uid));
+    // const q = query(todoCollection);
+    // const q = query(collection(db, "todos"), where("user", "==", user.uid));
     // const q = query(todoCollection, orderBy("datetime", "asc"));
-    
-    if(!data?.user?.name) return;
-    
+
+    if (!data?.user?.name) return;
+
     const q = query(todoCollection, where("userName", "==", data?.user?.name));
+
     // Firestore 에서 할 일 목록을 조회합니다.
     const results = await getDocs(q);
     const newTodos = [];
@@ -72,7 +74,6 @@ const TodoList = () => {
     setTodos(newTodos);
   };
 
-
   // addTodo 함수는 입력값을 이용하여 새로운 할 일을 목록에 추가하는 함수입니다.
   const addTodo = async () => {
     // 입력값이 비어있는 경우 함수를 종료합니다.
@@ -85,18 +86,17 @@ const TodoList = () => {
     // }
     // ...todos => {id: 1, text: "할일1", completed: false}, {id: 2, text: "할일2", completed: false}}, ..
 
-    // Firestore에 추가할 데이터에 현재 날짜를 추가합니다.
+    // Firestore 에 추가한 할 일을 저장합니다.
     const currentDate = new Date();
-
     const docRef = await addDoc(todoCollection, {
       userName: data?.user?.name,
       text: input,
       completed: false,
-      createdAt: serverTimestamp(), // Firestore 서버 타임스탬프 사용
+      createdAt: serverTimestamp(),
     });
 
     // id 값을 Firestore 에 저장한 값으로 지정합니다.
-    setTodos([...todos, { id: docRef.id, text: input, completed: false, createdAt:currentDate}]);
+    setTodos([...todos, { id: docRef.id, text: input, completed: false, createdAt:currentDate }]);
     setInput("");
   };
 
@@ -140,8 +140,8 @@ const TodoList = () => {
   // 컴포넌트를 렌더링합니다.
   return (
     <div className={styles.container}>
-      <h1 className="text-xl mb-4 font-bold text-white underline underline-offset-4 decoration-wavy">
-        Todo List
+      <h1 className="text-xl mb-4 font-bold underline underline-offset-4 decoration-wavy">
+        {data?.user?.name}'s Todo List
       </h1>
       {/* 할 일을 입력받는 텍스트 필드입니다. */}
       <input
@@ -154,8 +154,8 @@ const TodoList = () => {
       {/* 할 일을 추가하는 버튼입니다. */}
       <button
         // className={styles.addButton}
-        className="w-40 justify-self-end p-1 mb-4 bg-pink-500 text-white
-                   border border-pink-500 rounded hover:bg-white hover:text-pink-500"
+        className="w-40 justify-self-end p-1 mb-4 bg-blue-500 text-white
+                   border border-blue-500 rounded hover:bg-white hover:text-blue-500"
         onClick={addTodo}
       >
         Add Todo
